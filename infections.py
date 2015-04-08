@@ -26,7 +26,7 @@ number of users vs. coach and all students
 """
 users = []
 
-def limited_infection():
+def limited_infection(start_user, num_users, new_site_version):
   pass
 
 def total_infection(start_user, new_site_version):
@@ -40,8 +40,13 @@ def total_infection(start_user, new_site_version):
       visited.add(user)
       user.site_version = new_site_version
 
+      # All coach-student pairs should be on the same
+      # site version
       for student in user.students:
         queue.append(student)
+
+      for coach in user.coaches:
+        queue.append(coach)
 
 
 def init_users():
@@ -50,27 +55,33 @@ def init_users():
   user_3 = User(user_id=3, site_version='A')
   user_4 = User(user_id=4, site_version='A')
   user_5 = User(user_id=5, site_version='A')
+  user_6 = User(user_id=6, site_version='A')
+  user_7 = User(user_id=7, site_version='A')
+  user_8 = User(user_id=8, site_version='A')
 
   user_1.add_student(user_2)
   user_1.add_student(user_3)
   user_1.add_student(user_4)
   user_2.add_student(user_5)
+  user_6.add_student(user_7)
+  user_8.add_student(user_3)
 
   users.append(user_1)
   users.append(user_2)
   users.append(user_3)
   users.append(user_4)
   users.append(user_5)
+  users.append(user_6)
+  users.append(user_7)
+  users.append(user_8)
 
 if __name__=="__main__":
   init_users()
   print "Before infection:"
   for user in users:
-    print user
-    print user.site_version
+    print str(user.user_id) + " ---> " + str(user.site_version)
 
   total_infection(start_user=users[0], new_site_version='B')
   print "After infection:"
   for user in users:
-    print user
-    print user.site_version
+    print str(user.user_id) + " ---> " + str(user.site_version)
