@@ -19,15 +19,75 @@ And so on...
 Modified BFS?
 
 Limited infection
-Given a number of users that we would like to infect and a starting user
-infect the coaching graph that the user is contained in
-such that
-number of users vs. coach and all students
+Given a number of users, we would like to infect as close to
+that number of users as possible in the coaching graph. We
+prefer to infect a user only if all of his/her students will also
+be infected. If not, we would rather not infect that user.
+
+Criteria for selecting users to infect:
+All of its direct students and direct coaches will be infected
+If all of its direct students and coaches are infected, 
+abs(the number
+of total infected users is - the desired number of infected
+users) <= 5
+Else stop infection
+
+
+
 """
 users = []
 
 def limited_infection(start_user, num_users, new_site_version):
-  pass
+  curr_infected = 0
+  visited, queue = set(), []
+  infect = set()
+
+  queue.append(start_user)
+
+  while queue:
+    user = queue.pop(0)
+
+    if user not in visited:
+      visited.add(user)
+
+      should_infect_students_coaches = False
+
+      if user in infect:
+        user.site_version = new_site_version
+        curr_infected += 1
+        infect.remove(user)
+
+        proj_infect = curr_infected + len(user.students) + \
+          len(user.coaches)
+
+        if abs(proj_infect - num_users) == 0:
+          should_infect_students_coaches = True
+
+      else:
+
+        proj_infect = curr_infected + len(user.students) + \
+          len(user.coaches) + 1
+
+        # 5 is an arbitrary number
+        if abs(proj_infect - num_users) == 0:
+          user.site_version = new_site_version
+          curr_infected += 1
+          should_infect_students_coaches = True
+
+      for student in user.students:
+        queue.append(student)
+
+        if should_infect_students_coaches:
+          infect.add(student)
+
+      for coach in user.coaches:
+        queue.append(coach)
+
+        if should_infect_students_coaches:
+          infect.add(coach)
+
+      print curr_infected
+
 
 def total_infection(start_user, new_site_version):
   visited, queue = set(), []
@@ -81,7 +141,12 @@ if __name__=="__main__":
   for user in users:
     print str(user.user_id) + " ---> " + str(user.site_version)
 
-  total_infection(start_user=users[0], new_site_version='B')
-  print "After infection:"
+  limited_infection(start_user=users[0], num_users=3, new_site_version='B')
+  print "After limited infection:"
   for user in users:
     print str(user.user_id) + " ---> " + str(user.site_version)
+
+  # total_infection(start_user=users[0], new_site_version='B')
+  # print "After total infection:"
+  # for user in users:
+  #   print str(user.user_id) + " ---> " + str(user.site_version)
