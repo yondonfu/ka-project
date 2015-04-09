@@ -1,3 +1,4 @@
+import argparse
 from models import User
 
 """
@@ -54,13 +55,12 @@ def limited_infection(start_user, num_users, new_site_version):
 
       if user in infect:
         user.site_version = new_site_version
-        curr_infected += 1
         infect.remove(user)
 
         proj_infect = curr_infected + len(user.students) + \
           len(user.coaches)
 
-        if abs(proj_infect - num_users) == 0:
+        if abs(proj_infect - num_users) <= 2:
           should_infect_students_coaches = True
 
       else:
@@ -68,10 +68,9 @@ def limited_infection(start_user, num_users, new_site_version):
         proj_infect = curr_infected + len(user.students) + \
           len(user.coaches) + 1
 
-        # 5 is an arbitrary number
-        if abs(proj_infect - num_users) == 0:
+        if abs(proj_infect - num_users) <= 2:
           user.site_version = new_site_version
-          curr_infected += 1
+          curr_infected += len(user.students) + len(user.coaches) + 1
           should_infect_students_coaches = True
 
       for student in user.students:
@@ -136,17 +135,33 @@ def init_users():
   users.append(user_8)
 
 if __name__=="__main__":
-  init_users()
-  print "Before infection:"
-  for user in users:
-    print str(user.user_id) + " ---> " + str(user.site_version)
+  parser = argparse.ArgumentParser(description="Test infection algorithms.")
+  parser.add_argument("test", help="The test to run. \"total\" for total infection. \
+    \"limited\" for limited infection", type=str)
+  args = parser.parse_args()
 
-  limited_infection(start_user=users[0], num_users=3, new_site_version='B')
-  print "After limited infection:"
-  for user in users:
-    print str(user.user_id) + " ---> " + str(user.site_version)
+  if args.test.lower() == "total":
+    init_users()
+    print "Before infection:"
+    for user in users:
+      print str(user.user_id) + " ---> " + str(user.site_version)
 
-  # total_infection(start_user=users[0], new_site_version='B')
-  # print "After total infection:"
-  # for user in users:
-  #   print str(user.user_id) + " ---> " + str(user.site_version)
+    total_infection(start_user=users[0], new_site_version='B')
+    print "After total infection:"
+    for user in users:
+      print str(user.user_id) + " ---> " + str(user.site_version)
+
+  elif args.test.lower() == "limited":
+    init_users()
+    print "Before infection:"
+    for user in users:
+      print str(user.user_id) + " ---> " + str(user.site_version)
+
+    limited_infection(start_user=users[0], num_users=3, new_site_version='B')
+    print "After limited infection:"
+    for user in users:
+      print str(user.user_id) + " ---> " + str(user.site_version)
+
+  else:
+    parser.print_help()
+
