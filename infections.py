@@ -136,8 +136,10 @@ def init_users():
 
 if __name__=="__main__":
   parser = argparse.ArgumentParser(description="Test infection algorithms.")
-  parser.add_argument("test", help="The test to run. \"total\" for total infection. \
+  parser.add_argument("test", help="the test to run. \"total\" for total infection. \
     \"limited\" for limited infection", type=str)
+  parser.add_argument("-u", "--numusers", help="the number of users to infect for \
+    limited infection.", type=int, default=3)
   args = parser.parse_args()
 
   if args.test.lower() == "total":
@@ -157,7 +159,7 @@ if __name__=="__main__":
     for user in users:
       print str(user.user_id) + " ---> " + str(user.site_version)
 
-    limited_infection(start_user=users[0], num_users=3, new_site_version='B')
+    limited_infection(start_user=users[0], num_users=args.numusers, new_site_version='B')
     print "After limited infection:"
     for user in users:
       print str(user.user_id) + " ---> " + str(user.site_version)
