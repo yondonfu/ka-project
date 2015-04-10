@@ -1,5 +1,9 @@
 import argparse
 from models import User
+import networkx as nx
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+import numpy as np
 
 """
 User attributes:
@@ -134,10 +138,43 @@ def init_users():
   users.append(user_7)
   users.append(user_8)
 
+def visualize():
+  G = nx.Graph()
+
+  for user in users:
+    G.add_node(user)
+
+  fig = plt.figure(figsize=(8,8))
+  pos = nx.spring_layout(G)
+
+  nc = np.random.random(3)
+  nodes = nx.draw_networkx_nodes(G, pos, nodelist=users,
+    node_color=nc, node_size=500, alpha=0.8)
+
+  edges = nx.draw_networkx_edges(G, pos, edgelist=[(users[0], users[1]), (users[0], users[2]), \
+    (users[0], users[3]), (users[1], users[4]), (users[5], users[6]), (users[7], users[2])], width=8, alpha=0.5, edge_color='r')
+
+  nx.draw_networkx_labels(G, pos, dict(zip(users, [user.user_id for user in users])), font_size=10)
+
+  def update(n):
+    print "called"
+    nc = np.random.random(3)
+    nodes.set_array(nc)
+    return nodes,
+
+  anim = FuncAnimation(fig, update, interval=1000, blit=False)
+
+  plt.axis('off')
+  plt.show()
+
+
 if __name__=="__main__":
   parser = argparse.ArgumentParser(description="Test infection algorithms.")
   parser.add_argument("test", help="the test to run. \"total\" for total infection. \
     \"limited\" for limited infection", type=str)
+
+  parser.add_argument("visualize", help="visualization flag", type=str)
+
   parser.add_argument("-u", "--numusers", help="the number of users to infect for \
     limited infection.", type=int, default=3)
   args = parser.parse_args()
@@ -166,4 +203,7 @@ if __name__=="__main__":
 
   else:
     parser.print_help()
+
+  if args.visualize.lower() == "visualize":
+    visualize()
 
