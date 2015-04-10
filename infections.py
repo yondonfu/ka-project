@@ -1,6 +1,10 @@
 import argparse
 from models import User
 import networkx as nx
+import matplotlib
+# Need to use TkAgg backend instead of MacOSX backend or else
+# the matplotlib window will not be able to be a top-level window
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import numpy as np
@@ -159,19 +163,19 @@ def visualize():
     node_color=colorlist, node_size=500, alpha=0.8)
 
   edges = nx.draw_networkx_edges(G, pos, edgelist=[(users[0], users[1]), (users[0], users[2]), \
-    (users[0], users[3]), (users[1], users[4]), (users[5], users[6]), (users[7], users[2])], width=8, alpha=0.5, edge_color='r')
+    (users[0], users[3]), (users[1], users[4]), (users[5], users[6]), (users[7], users[2])], width=2, alpha=0.5, edge_color='r')
 
   nx.draw_networkx_labels(G, pos, dict(zip(users, [user.user_id for user in users])), font_size=10)
 
   def update(n):
     print "called"
-    if n < 6:
-      colorlist[infection_path[n] - 1] = 'g'
+    if n < len(infection_path):
+      colorlist[infection_path[n] - 1] = 'b'
 
     nodes = nx.draw_networkx_nodes(G, pos, nodelist=users, node_color=colorlist, node_size=500, alpha=0.8)
     return nodes,
 
-  anim = FuncAnimation(fig, update, interval=3000, blit=False)
+  anim = FuncAnimation(fig, update, frames=len(infection_path), interval=2500, blit=False, repeat=False)
 
   plt.axis('off')
   plt.show()
@@ -182,10 +186,10 @@ if __name__=="__main__":
   parser.add_argument("test", help="the test to run. \"total\" for total infection. \
     \"limited\" for limited infection", type=str)
 
-  parser.add_argument("visualize", help="visualization flag", type=str)
-
   parser.add_argument("-u", "--numusers", help="the number of users to infect for \
     limited infection.", type=int, default=3)
+
+  parser.add_argument("-v", "--visualize", help="flag for visualization", action="store_true")
   args = parser.parse_args()
 
   if args.test.lower() == "total":
@@ -199,6 +203,9 @@ if __name__=="__main__":
     for user in users:
       print str(user.user_id) + " ---> " + str(user.site_version)
 
+    if args.visualize:
+      visualize()
+
 
   elif args.test.lower() == "limited":
     init_users()
@@ -211,9 +218,10 @@ if __name__=="__main__":
     for user in users:
       print str(user.user_id) + " ---> " + str(user.site_version)
 
+    if args.visualize:
+      visualize()
+
   else:
     parser.print_help()
 
-  if args.visualize.lower() == "visualize":
-    visualize()
 
