@@ -126,14 +126,14 @@ def visualize():
   nx.draw_networkx_labels(G, pos, dict(zip(users, [user.user_id for user in users])), font_size=10)
 
   def update(n):
-    print "called"
+    print n
     if n < len(infection_path):
       colorlist[infection_path[n] - 1] = 'b'
 
     nodes = nx.draw_networkx_nodes(G, pos, nodelist=users, node_color=colorlist, node_size=500, alpha=0.8)
     return nodes,
 
-  anim = FuncAnimation(fig, update, frames=len(infection_path), interval=1750, blit=False, repeat=False)
+  anim = FuncAnimation(fig, update, frames=len(infection_path), interval=1500, blit=False, repeat=False)
 
   plt.axis('off')
   plt.show()
