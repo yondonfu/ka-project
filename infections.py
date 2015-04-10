@@ -41,6 +41,8 @@ Else stop infection
 
 """
 users = []
+infection_path = []
+colorlist = []
 
 def limited_infection(start_user, num_users, new_site_version):
   curr_infected = 0
@@ -59,6 +61,7 @@ def limited_infection(start_user, num_users, new_site_version):
 
       if user in infect:
         user.site_version = new_site_version
+        infection_path.append(user.user_id)
         infect.remove(user)
 
         proj_infect = curr_infected + len(user.students) + \
@@ -74,6 +77,7 @@ def limited_infection(start_user, num_users, new_site_version):
 
         if abs(proj_infect - num_users) <= 2:
           user.site_version = new_site_version
+          infection_path.append(user.user_id)
           curr_infected += len(user.students) + len(user.coaches) + 1
           should_infect_students_coaches = True
 
@@ -102,6 +106,7 @@ def total_infection(start_user, new_site_version):
     if user not in visited:
       visited.add(user)
       user.site_version = new_site_version
+      infection_path.append(user.user_id)
 
       # All coach-student pairs should be on the same
       # site version
@@ -138,6 +143,9 @@ def init_users():
   users.append(user_7)
   users.append(user_8)
 
+  for i in range(0, 8):
+    colorlist.append('r')
+
 def visualize():
   G = nx.Graph()
 
@@ -147,9 +155,8 @@ def visualize():
   fig = plt.figure(figsize=(8,8))
   pos = nx.spring_layout(G)
 
-  nc = np.random.random(3)
   nodes = nx.draw_networkx_nodes(G, pos, nodelist=users,
-    node_color=nc, node_size=500, alpha=0.8)
+    node_color=colorlist, node_size=500, alpha=0.8)
 
   edges = nx.draw_networkx_edges(G, pos, edgelist=[(users[0], users[1]), (users[0], users[2]), \
     (users[0], users[3]), (users[1], users[4]), (users[5], users[6]), (users[7], users[2])], width=8, alpha=0.5, edge_color='r')
@@ -158,11 +165,13 @@ def visualize():
 
   def update(n):
     print "called"
-    nc = np.random.random(3)
-    nodes.set_array(nc)
+    if n < 6:
+      colorlist[infection_path[n] - 1] = 'g'
+
+    nodes = nx.draw_networkx_nodes(G, pos, nodelist=users, node_color=colorlist, node_size=500, alpha=0.8)
     return nodes,
 
-  anim = FuncAnimation(fig, update, interval=1000, blit=False)
+  anim = FuncAnimation(fig, update, interval=3000, blit=False)
 
   plt.axis('off')
   plt.show()
@@ -189,6 +198,7 @@ if __name__=="__main__":
     print "After total infection:"
     for user in users:
       print str(user.user_id) + " ---> " + str(user.site_version)
+
 
   elif args.test.lower() == "limited":
     init_users()
