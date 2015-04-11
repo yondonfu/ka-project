@@ -14,54 +14,66 @@ colorlist = []
 edge_list = []
 TOTAL_USERS = 12
 
-def limited_infection(start_user, num_users, new_site_version):
+# TODO: write a most students function that returns
+# the user that has the most students
+# Use this user as the intial user for each bfs 
+def limited_infection(num_users, new_site_version):
   curr_infected = 0
   visited, queue = set(), []
   infect = set()
 
-  queue.append(start_user)
+  # queue.append(start_user)
 
-  while queue:
-    user = queue.pop(0)
+  while set(users) - visited:
+    unvisited = set(users) - visited
+    queue.append(unvisited.pop())
 
-    if user not in visited:
-      visited.add(user)
+    while queue:
+      user = queue.pop(0)
 
-      should_infect_students_coaches = False
+      if user not in visited:
+        visited.add(user)
 
-      if user in infect:
-        user.site_version = new_site_version
-        infection_path.append(user.user_id)
-        infect.remove(user)
+        should_infect_students_coaches = False
 
-        proj_infect = curr_infected + len(user.students) + \
-          len(user.coaches)
-
-        if num_users - proj_infect >= 2 or proj_infect - num_users <= 2:
-          should_infect_students_coaches = True
-
-      else:
-
-        proj_infect = curr_infected + len(user.students) + \
-          len(user.coaches) + 1
-
-        if num_users - proj_infect >= 2 or proj_infect - num_users <= 2:
+        if user in infect:
           user.site_version = new_site_version
           infection_path.append(user.user_id)
-          curr_infected += len(user.students) + len(user.coaches) + 1
-          should_infect_students_coaches = True
+          print "append infect " + str(user.user_id)
+          infect.remove(user)
 
-      for student in user.students:
-        queue.append(student)
+          proj_infect = curr_infected + len(set(user.students) - visited) + \
+            len(set(user.coaches) - visited)
 
-        if should_infect_students_coaches:
-          infect.add(student)
+          if num_users - proj_infect >= 0 or proj_infect - num_users <= 2:
+            curr_infected += len(set(user.students) - visited) + len(set(user.coaches) - visited)
+            should_infect_students_coaches = True
 
-      for coach in user.coaches:
-        queue.append(coach)
+        else:
 
-        if should_infect_students_coaches:
-          infect.add(coach)
+          proj_infect = curr_infected + len(set(user.students) - visited) + \
+            len(set(user.coaches) - visited) + 1
+
+          if num_users - proj_infect >= 0 or proj_infect - num_users <= 2:
+            user.site_version = new_site_version
+            infection_path.append(user.user_id)
+            print "append " + str(user.user_id)
+            print "before curr infected " + str(curr_infected)
+            curr_infected += len(set(user.students) - visited) + len(set(user.coaches) - visited) + 1
+            print "after curr infected " + str(curr_infected)
+            should_infect_students_coaches = True
+
+        for student in user.students:
+          queue.append(student)
+
+          if should_infect_students_coaches:
+            infect.add(student)
+
+        for coach in user.coaches:
+          queue.append(coach)
+
+          if should_infect_students_coaches:
+            infect.add(coach)
 
 
 def total_infection(start_user, new_site_version):
@@ -173,7 +185,7 @@ if __name__=="__main__":
     for user in users:
       print str(user.user_id) + " ---> " + str(user.site_version)
 
-    limited_infection(start_user=users[0], num_users=args.numusers, new_site_version='B')
+    limited_infection(num_users=args.numusers, new_site_version='B')
     print "After limited infection:"
     for user in users:
       print str(user.user_id) + " ---> " + str(user.site_version)
@@ -183,6 +195,7 @@ if __name__=="__main__":
     if args.visualize:
       visualize()
     
+    print infection_path
   else:
     parser.print_help()
 
