@@ -14,7 +14,7 @@ python infections.py total
 To run limited infection algorithm:
 python infections.py limited
 
-Use the -u option to specify the desired number of users to infect for the limited infection algorithm
+Use the -u option to specify the desired number of users to infect for the limited infection algorithm. The desired number of users defaults to 3 if the -u option is not used
 
 Ex.
 python infections.py limited -u 7
@@ -35,3 +35,5 @@ Uses breadth-first search. Since we are dealing with "infection" I thought it wo
 
 Limited Infection:
 Also uses breadth-first search, but also kept track of the current number of users to be infected. This algorithm tries to infect a number of users equal to the desired number of users passed into the algorithm. There is room for error as it is not always possible to infect the exact desired number of users. Thus, the number of infected users can exceed the desired number by a little bit. Furthermore, we prefer to infect a user only if all of its students can be infected as well such that the number of infected users does not exceed the desired number of infected users (taking into account the room for error)
+
+This implementation uses 12 users and the coach-student relationships were set arbitrarily by me for testing.
