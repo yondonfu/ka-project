@@ -4,6 +4,8 @@ Instructions to run:
 
 git clone https://github.com/yondonfu/ka-project.git
 
+Make sure pip is installed
+
 pip install -r requirements.txt
 
 To run total infection algorithm:
@@ -22,6 +24,9 @@ Use the -v option to enable visualization
 Ex.
 python infections.py total -v
 python infections.py limited -u 7 -v
+
+For some help with how to run the infection algorithms, type:
+python infections.py -h
 
 Implementation Choices
 Total Infection:
