@@ -14,19 +14,23 @@ colorlist = []
 edge_list = []
 TOTAL_USERS = 12
 
-# TODO: write a most students function that returns
-# the user that has the most students
-# Use this user as the intial user for each bfs 
+# Get index in a subset list of users such that
+# the index corresponds with the user with the most
+# students
+def user_index_most_students(users):
+  user_students = [len(user.students) for user in users]
+  return user_students.index(max(user_students))
+ 
 def limited_infection(num_users, new_site_version):
   curr_infected = 0
   visited, queue = set(), []
   infect = set()
 
-  # queue.append(start_user)
-
+  # Set of total users - set of users that have been visited = set of
+  # univisted u sers
   while set(users) - visited:
-    unvisited = set(users) - visited
-    queue.append(unvisited.pop())
+    unvisited = list(set(users) - visited)
+    queue.append(unvisited.pop(user_index_most_students(unvisited)))
 
     while queue:
       user = queue.pop(0)
@@ -39,7 +43,6 @@ def limited_infection(num_users, new_site_version):
         if user in infect:
           user.site_version = new_site_version
           infection_path.append(user.user_id)
-          print "append infect " + str(user.user_id)
           infect.remove(user)
 
           proj_infect = curr_infected + len(set(user.students) - visited) + \
@@ -50,18 +53,21 @@ def limited_infection(num_users, new_site_version):
             should_infect_students_coaches = True
 
         else:
-
           proj_infect = curr_infected + len(set(user.students) - visited) + \
             len(set(user.coaches) - visited) + 1
 
           if num_users - proj_infect >= 0 or proj_infect - num_users <= 2:
             user.site_version = new_site_version
             infection_path.append(user.user_id)
-            print "append " + str(user.user_id)
-            print "before curr infected " + str(curr_infected)
             curr_infected += len(set(user.students) - visited) + len(set(user.coaches) - visited) + 1
-            print "after curr infected " + str(curr_infected)
             should_infect_students_coaches = True
+          else:
+            # This user and all its students will not be affected
+            # so we can just mark all of its students as visited
+            # because the infection will not spread anymore from this user
+            for student in user.students:
+              visited.add(student)
+            break
 
         for student in user.students:
           queue.append(student)
@@ -168,6 +174,7 @@ if __name__=="__main__":
     for user in users:
       print str(user.user_id) + " ---> " + str(user.site_version)
 
+    # Can change the start_user here
     total_infection(start_user=users[0], new_site_version='B')
     print "After total infection:"
     for user in users:
