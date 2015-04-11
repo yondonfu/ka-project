@@ -29,6 +29,7 @@ For some help with how to run the infection algorithms, type:
 python infections.py -h
 
 Implementation Choices
+
 Total Infection:
 Uses breadth-first search. Since we are dealing with "infection" I thought it would make sense to first infect all direct students of a coach before infecting the students of those students. All coach-student pairs should be on the same site version so we take into account all the coaches and all the students of each student
 
